@@ -278,7 +278,7 @@ export default function App() {
     setLoading(true)
     setApiError(null)
     try {
-      const res = await fetch('/triage', {
+      const res = await fetch('https://healthtriage.onrender.com/triage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text }),
