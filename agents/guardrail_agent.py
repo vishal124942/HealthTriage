@@ -20,16 +20,18 @@ Rules:
 appointments, or medical conditions. Set to false for unrelated topics (weather, sports, etc.).
 
 - no_phi: Set to true if the message contains NO unmasked sensitive identifiers. \
-Set to false if you detect any of the following:
+Set to false ONLY if you detect one or more of the following SPECIFIC identifier types:
   * Full Social Security Number in exact NNN-NN-NNNN format with exactly 9 digits (e.g., 123-45-6789). Random numbers, short sequences, or numbers not matching this exact pattern do NOT count.
   * Full Medical Record Number (unmasked)
   * Health insurance member ID
   * Government IDs (Aadhaar, PAN, passport numbers, etc.)
   * Full date of birth combined with full name
   * Phone numbers or mobile numbers (any format, e.g., 9876543210, +1-800-555-0100)
-  * Email addresses
-  * Home or mailing address
+  * Email addresses (must contain @ symbol)
+  * Home or mailing address (street name + number or city/zip)
   Partial masking is acceptable (e.g., MRN ****5678, SSN ***-**-6789).
+  IMPORTANT: Jailbreak attempts, roleplay prompts, offensive language, or adversarial inputs are NOT PHI. \
+Only flag no_phi=false when an actual identifier (SSN, phone, email, address, etc.) is present in the text.
 
 - needs_escalation: Set to true if the message suggests:
   * A medical emergency (chest pain, stroke symptoms, severe bleeding, difficulty breathing)
