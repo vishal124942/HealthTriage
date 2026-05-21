@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from google import genai
+import openai
 
 from agents.guardrail_agent import GuardrailOutput, run as run_guardrail
 from agents.symptom_parser_agent import SymptomParserOutput, run as run_parser
@@ -55,7 +55,7 @@ class TriageResult:
     error: Optional[str] = None
 
 
-def run_triage(patient_message: str, client: genai.Client) -> TriageResult:
+def run_triage(patient_message: str, client: openai.OpenAI) -> TriageResult:
     """
     Execute the full 3-agent triage pipeline.
 

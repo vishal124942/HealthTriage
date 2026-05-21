@@ -18,7 +18,7 @@ from typing import Any, Dict, List
 
 import pytest
 from dotenv import load_dotenv
-from google import genai
+import openai
 from rich.console import Console
 from rich.table import Table
 from rich import box
@@ -47,7 +47,7 @@ def load_test_cases() -> List[Dict]:
 
 # ── Single-case evaluation ────────────────────────────────────────────────────
 
-def evaluate_case(case: Dict, client: genai.Client) -> Dict[str, Any]:
+def evaluate_case(case: Dict, client: openai.OpenAI) -> Dict[str, Any]:
     """Run one test case through the pipeline and evaluate against expectations."""
     start = time.perf_counter()
     result: TriageResult = run_triage(case["input"], client)
@@ -215,15 +215,18 @@ def print_per_case_table(results: List[Dict]) -> None:
 # ── Main runner ───────────────────────────────────────────────────────────────
 
 def run_evaluation() -> List[Dict]:
-    api_key = os.getenv("GOOGLE_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         console.print(
-            "[bold red]Error:[/bold red] GOOGLE_API_KEY not set. "
+            "[bold red]Error:[/bold red] GROQ_API_KEY not set. "
             "Copy .env.example to .env and add your key."
         )
         sys.exit(1)
 
-    client = genai.Client(api_key=api_key)
+    client = openai.OpenAI(
+        base_url="https://api.groq.com/openai/v1",
+        api_key=api_key,
+    )
     test_cases = load_test_cases()
 
     console.print(
@@ -256,12 +259,15 @@ def run_evaluation() -> List[Dict]:
 # ── Pytest integration ────────────────────────────────────────────────────────
 
 @pytest.fixture(scope="session")
-def gemini_client():
+def groq_client():
     load_dotenv()
-    api_key = os.getenv("GOOGLE_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        pytest.skip("GOOGLE_API_KEY not set")
-    return genai.Client(api_key=api_key)
+        pytest.skip("GROQ_API_KEY not set")
+    return openai.OpenAI(
+        base_url="https://api.groq.com/openai/v1",
+        api_key=api_key,
+    )
 
 
 @pytest.mark.parametrize(
@@ -269,9 +275,9 @@ def gemini_client():
     load_test_cases(),
     ids=[c["id"] for c in load_test_cases()],
 )
-def test_triage_case(case, gemini_client):
+def test_triage_case(case, groq_client):
     """Parametrised pytest test – one test per evaluation case."""
-    result = evaluate_case(case, gemini_client)
+    result = evaluate_case(case, groq_client)
     failed_assertions = {k: v for k, v in result["assertions"].items() if not v}
     assert not failed_assertions, (
         f"{case['id']} ({case['tag']}) – failed assertions: {list(failed_assertions.keys())}\n"

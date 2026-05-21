@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from google import genai
+import openai
 from pydantic import BaseModel
 
 from orchestrator import run_triage
@@ -22,16 +22,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_client: Optional[genai.Client] = None
+_client: Optional[openai.OpenAI] = None
 
 
-def get_client() -> genai.Client:
+def get_client() -> openai.OpenAI:
     global _client
     if _client is None:
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            raise HTTPException(status_code=500, detail="GOOGLE_API_KEY is not configured on the server.")
-        _client = genai.Client(api_key=api_key)
+            raise HTTPException(status_code=500, detail="GROQ_API_KEY is not configured on the server.")
+        _client = openai.OpenAI(
+            base_url="https://api.groq.com/openai/v1",
+            api_key=api_key,
+        )
     return _client
 
 

@@ -4,7 +4,7 @@ import os
 import json
 
 from dotenv import load_dotenv
-from google import genai
+import openai
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -57,15 +57,18 @@ def print_result(result) -> None:
 
 
 def main() -> None:
-    api_key = os.getenv("GOOGLE_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         console.print(
-            "[bold red]Error:[/bold red] GOOGLE_API_KEY not set. "
+            "[bold red]Error:[/bold red] GROQ_API_KEY not set. "
             "Copy .env.example to .env and add your key."
         )
         return
 
-    client = genai.Client(api_key=api_key)
+    client = openai.OpenAI(
+        base_url="https://api.groq.com/openai/v1",
+        api_key=api_key,
+    )
     console.print(
         Panel(
             "[bold cyan]Healthcare AI – Patient Symptom Triage Concierge[/bold cyan]\n"
