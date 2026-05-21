@@ -81,7 +81,8 @@ def run(
         except Exception as exc:
             last_error = exc
             if attempt < max_retries - 1:
-                time.sleep(2**attempt)
+                wait = 15 if "429" in str(exc) or "RESOURCE_EXHAUSTED" in str(exc) else 5 * (attempt + 1)
+                time.sleep(wait)
     raise RuntimeError(
         f"Symptom parser agent failed after {max_retries} attempts: {last_error}"
     )
