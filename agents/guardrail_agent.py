@@ -40,9 +40,13 @@ intent, or safety of the message.
   * Email address containing @ symbol (e.g., john@gmail.com)
   * Physical home or mailing address (street + number or city + zip code)
 
-  RULE: The words "ignore", "doctor", "diagnose", "instructions", "prescribe", \
-"BP", "blood pressure", or any medical term are NOT PHI. Do NOT set no_phi=false \
-for jailbreak or roleplay messages that contain no actual identity identifiers.
+  RULE: The following are NEVER PHI — always set no_phi=true for these:
+  - Medical terms, symptoms, disease names, drug names
+  - Jailbreak or roleplay phrases ("ignore instructions", "you are a doctor")
+  - URLs, website links, Google Meet links, or any web address (e.g. https://meet.google.com/abc-defg-hij)
+  - Meeting codes or random alphanumeric/hyphenated codes that are not in SSN format
+  - Greetings, questions, or general conversation
+  Only set no_phi=false when a real personal identifier from the list above is present.
 
 - needs_escalation: Set to true if the message suggests:
   * A medical emergency (chest pain, stroke symptoms, severe bleeding, difficulty breathing)
